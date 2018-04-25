@@ -2,7 +2,6 @@ package w_vertex.wings
 
 import android.os.*
 import android.support.v7.app.*
-import android.util.*
 import android.widget.*
 import com.google.firebase.iid.*
 import com.gun0912.tedpermission.*
@@ -26,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         vm = MainViewModel(this)
         networkManager = NetworkManager("192.168.1.47")
 
-        bt_main_voice.setOnClickListener { vm.listenVoice() }
+        bt_main_voice.setOnClickListener { checkPermissionVoice() }
         ib_main_state.setOnClickListener {
             if(networkManager.socket == null) { networkManager.createSocket() }
             else { networkManager.close() }
@@ -81,8 +80,8 @@ class MainActivity : AppCompatActivity() {
                 it.contains("꺼", true) -> "OFF"
                 it.contains("약", true) -> "WEAK"
                 it.contains("강", true) -> "STRONG"
-                else -> { tv_main_voice_state.text = it; "error" }
-            }.let { networkManager.sendData(it) }
+                else -> { tv_main_voice_state.text = it; null }
+            }.let { it?.let { networkManager.sendData(it) } }
         }.let { disposables.add(it) }
     }
 
@@ -96,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                         "WEAK" -> "파워 - 약"
                         "STRONG" -> "파워 - 강"
                         else -> "상태 오류.."
-                    }.let { tv_main_state.text = it; Log.e("xxx", it) }
+                    }.let { tv_main_state.text = it }
                 }.let { disposables.add(it) }
     }
 
@@ -105,12 +104,11 @@ class MainActivity : AppCompatActivity() {
                 .setPermissions(android.Manifest.permission.RECORD_AUDIO)
                 .setPermissionListener(object: PermissionListener{
                     override fun onPermissionGranted() {
-                        bt_main_voice.isEnabled = true
+                        vm.listenVoice()
                     }
 
                     override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
                         showToast("음성인식을 사용할 수 없습니다.")
-                        bt_main_voice.isEnabled = false
                     }
                 }).check()
     }
