@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="w_vertex.wings.MainActivity">
+
+    <ImageButton
+        android:scaleType="centerCrop"
+        android:id="@+id/ib_main_state"
+        android:background="@drawable/main_state_line_back"
+        android:padding="8dp"
+        android:src="@drawable/all_logo"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.15"
+        android:layout_width="128dp"
+        android:layout_height="128dp" />
+
+    <TextView
+        android:id="@+id/tv_main_state"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/ib_main_state"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="현재 상태 : OFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:textColor="#FFFFFF"
+        android:text="OFF"
+        android:background="@drawable/main_button_shape"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintTop_toBottomOf="@id/ib_main_state"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/bt_main_weak"
+        android:id="@+id/bt_main_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:textColor="#FFFFFF"
+        android:text="약"
+        android:background="@drawable/main_button_shape"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintTop_toBottomOf="@id/ib_main_state"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/bt_main_off"
+        app:layout_constraintRight_toLeftOf="@id/bt_main_strong"
+        android:id="@+id/bt_main_weak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:textColor="#FFFFFF"
+        android:text="강"
+        android:background="@drawable/main_button_shape"
+        app:layout_constraintVertical_bias="0.4"
+        app:layout_constraintTop_toBottomOf="@id/ib_main_state"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/bt_main_weak"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/bt_main_strong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:scaleType="centerCrop"
+        android:padding="16dp"
+        android:src="@drawable/main_voice_icon"
+        android:background="@drawable/main_button_shape"
+        android:id="@+id/bt_main_voice"
+        app:layout_constraintRight_toLeftOf="@id/tv_main_voice_state"
+        app:layout_constraintTop_toBottomOf="@id/bt_main_off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="64dp"
+        android:layout_height="64dp" />
+
+    <TextView
+        app:layout_constraintLeft_toRightOf="@id/bt_main_voice"
+        android:text="여기에 음성이 표시됩니다."
+        android:id="@+id/tv_main_voice_state"
+        app:layout_constraintTop_toBottomOf="@id/bt_main_off"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:id="@+id/bt_main_fcm"
+        android:src="@drawable/main_fcm_icon"
+        android:background="@drawable/main_button_shape"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp" />
+
+
+</android.support.constraint.ConstraintLayout>
