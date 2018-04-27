@@ -1,7 +1,9 @@
 package w_vertex.wings
 
+import android.content.*
 import android.os.*
 import android.support.v7.app.*
+import android.util.*
 import android.widget.*
 import com.google.firebase.iid.*
 import com.gun0912.tedpermission.*
@@ -22,14 +24,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        vm = MainViewModel(this)
-        networkManager = NetworkManager("192.168.1.47")
+        vm = MainViewModel(applicationContext)
+        networkManager = NetworkManager()
 
+        bt_main_save_ip.setOnClickListener { saveIpAddr(et_main_ip.text.toString()) }
         bt_main_voice.setOnClickListener { checkPermissionVoice() }
         ib_main_state.setOnClickListener {
-            if(networkManager.socket == null) { networkManager.createSocket() }
+            if(networkManager.socket == null) {
+                getIdAddr()?.let { networkManager.createSocket(it) }
+            }
             else { networkManager.close() }
         }
+
         bt_main_fcm.setOnClickListener {
             FirebaseInstanceId.getInstance().token?.let { networkManager.sendData("fcm : $it") }
         }
@@ -42,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        checkPermissionVoice()
+        getIdAddr()?.let { Log.e("xxx", "connect"); networkManager.createSocket(it) }
     }
 
     override fun onDestroy() {
@@ -63,10 +69,13 @@ class MainActivity : AppCompatActivity() {
                     ib_main_state.background = getDrawable(data.first)
                     tv_main_state.text = data.second
                     showToast(data.second)
-                }
+                }.let { disposables.add(it) }
     }
 
     private fun setButton(){
+        vm.setButtonWithKey(bt_main_off to "OFF",
+                            bt_main_strong to "STRONG",
+                            bt_main_weak to "WEAK")
         vm.buttonSubject
                 .subscribeOn(Schedulers.io())
                 .subscribe {
@@ -76,11 +85,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun readVoiceData(){
         vm.voiceSubject.subscribe {
+            tv_main_voice_state.text = it
             when{
                 it.contains("꺼", true) -> "OFF"
                 it.contains("약", true) -> "WEAK"
                 it.contains("강", true) -> "STRONG"
-                else -> { tv_main_voice_state.text = it; null }
+                else -> null
             }.let { it?.let { networkManager.sendData(it) } }
         }.let { disposables.add(it) }
     }
@@ -89,13 +99,18 @@ class MainActivity : AppCompatActivity() {
         networkManager.dataSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .map { it.trim() }
+                .map { it.toInt() }
+                .map {
+                    when(it){
+                        0 -> "동작 정지"
+                        1 -> "약한 바람"
+                        2 -> "강한 바람"
+                        else -> "상태 오류"
+                    }
+                }
                 .subscribe{
-                    "현재 상태 : " + when(it){
-                        "OFF" -> "OFF"
-                        "WEAK" -> "파워 - 약"
-                        "STRONG" -> "파워 - 강"
-                        else -> "상태 오류.."
-                    }.let { tv_main_state.text = it }
+                    "현재 상태 : ${it}".let { tv_main_state.text = it }
                 }.let { disposables.add(it) }
     }
 
@@ -116,5 +131,22 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(msg: String){
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+
+    private fun saveIpAddr(ip: String){
+        getPr().edit().putString("ip", ip).apply()
+    }
+
+    private fun getIdAddr(): String?{
+        return getPr().getString("ip", "").let {
+            et_main_ip.setText(it)
+            if (it.isEmpty()){
+                showToast("IP를 설정하세요.")
+                null
+            }
+            else{ it }
+        }
+    }
+
+    private fun getPr(): SharedPreferences = getSharedPreferences("wings-ip-repo", Context.MODE_PRIVATE)
 
 }

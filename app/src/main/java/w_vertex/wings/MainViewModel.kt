@@ -3,33 +3,30 @@ package w_vertex.wings
 import android.content.*
 import android.os.*
 import android.speech.*
+import android.widget.*
 import io.reactivex.subjects.*
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 
 /**
  * Created by root1 on 24/04/2018.
  */
-class MainViewModel(val ac: MainActivity) {
+class MainViewModel(private val context: Context) {
 
     val buttonSubject: PublishSubject<String>
     val voiceSubject: PublishSubject<String>
-    val recognizer: SpeechRecognizer
+    private val recognizer: SpeechRecognizer
 
     init {
-        recognizer = SpeechRecognizer.createSpeechRecognizer(ac)
+        recognizer = SpeechRecognizer.createSpeechRecognizer(context)
         buttonSubject = PublishSubject.create()
         voiceSubject = PublishSubject.create()
-        setButton()
         setListenVoice()
     }
 
-    private fun setButton(){
-        ac.apply {
-            bt_main_off.setOnClickListener { buttonSubject.onNext("OFF") }
-            bt_main_strong.setOnClickListener { buttonSubject.onNext("STRONG") }
-            bt_main_weak.setOnClickListener { buttonSubject.onNext("WEAK") }
+    fun setButtonWithKey(vararg datas: Pair<Button, String>){
+        for (data in datas){
+            data.first.setOnClickListener { buttonSubject.onNext(data.second) }
         }
     }
 
@@ -53,7 +50,7 @@ class MainViewModel(val ac: MainActivity) {
 
     fun listenVoice(){
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, ac.packageName)
+            putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, context.packageName)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR")
         }
         recognizer.startListening(intent)

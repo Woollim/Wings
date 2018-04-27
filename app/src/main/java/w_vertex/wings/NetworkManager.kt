@@ -12,7 +12,7 @@ import java.util.concurrent.*
 /**
  * Created by root1 on 24/04/2018.
  */
-class NetworkManager(val ip: String, val port: Int = 3000) {
+class NetworkManager {
 
     var socket: Socket? = null
 
@@ -24,10 +24,9 @@ class NetworkManager(val ip: String, val port: Int = 3000) {
     init {
         dataSubject = PublishSubject.create()
         stateSubject = BehaviorSubject.createDefault(false)
-        createSocket()
     }
 
-    fun createSocket() {
+    fun createSocket(ip: String, port: Int = 3000) {
         Thread {
             try {
                 socket = Socket(ip, port)
@@ -63,6 +62,7 @@ class NetworkManager(val ip: String, val port: Int = 3000) {
 
     fun close() {
         socket?.let {
+            it.close()
             disposables.clear()
             stateSubject.onNext(false)
             socket = null
